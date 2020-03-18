@@ -2,7 +2,6 @@
 This module is for viewing the Lille Bus and Tram Traffic Timetable, from given stops, given bus / tramway number, and direction.
 It is based on the module developped by normyx : [MMM-Nantes-TAN](https://github.com/normyx/MMM-Nantes-TAN) and by ottopaulsen : [MMM-NesteBussAtB](https://github.com/ottopaulsen/MMM-NesteBussAtB) 
 ## Screenshot
-##TODO##
 ![screenshot](https://github.com/Jilano5/MMM-Ilevia-Lille/blob/master/MMM-Ilevia-Lille.png)
 ## API
 This module uses the opendata API provided by the MEL organization and Ilevia. Documentation may by found [here](https://opendata.lillemetropole.fr/explore/dataset/ilevia-prochainspassages/information/).
