@@ -1,0 +1,28 @@
+{
+  "name": "MMM-Ilevia-Lille",
+  "version": "1.0.0",
+  "description": "Lille Ilevia transport in Lille based on MEL open API",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jilano5/MMM-Ilevia-Lille"
+  },
+  "keywords": [
+    "magic mirror",
+    "smart mirror",
+    "localtransport",
+    "module",
+    "lille",
+    "ilevia"
+  ],
+  "author": "Jilano5",
+  "contributors": "https://github.com/Jilano5/MMM-Ilevia-Lille/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jilano5/MMM-Ilevia-Lille/issues"
+  },
+  "homepage": "https://github.com/Jilano5/MMM-Ilevia-Lille#readme",
+  "dependencies": {
+    "unirest": "latest",
+    "node-forge": "latest"
+  }
+}
