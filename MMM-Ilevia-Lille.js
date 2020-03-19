@@ -12,7 +12,7 @@ Module.register("MMM-Ilevia-Lille",{
 	
 	// Define module defaults
 	defaults: {
-		updateInterval: 1 * 60 * 1000, //time in ms between pulling request for new times (update request)
+		updateInterval: 2 * 60 * 1000, //time in ms between pulling request for new times (update request)
 		initialLoadDelay: 0, // start delay seconds.
 		maxLettersForDestination: 12, //will limit the length of the destination string
 		maxLettersForStop: 12, //will limit the length of the destination string
@@ -214,13 +214,21 @@ Module.register("MMM-Ilevia-Lille",{
 						if(bus.times.length > 0) {
 							var busTime = new Date(bus.times[0]);
 							minutes = Math.round((busTime - now) / 60000);
-							if(minutes <= 1){
+							if(minutes <= 1 && minutes > 0){
 								minutes = self.translate("CLOSE");
+							}
+							else if (minutes <= 0){
+								minutes = ''	
 							}
 						}
 						for(var i=1; i < bus.times.length; i++){
 							var busTime = new Date(bus.times[i]);
-							minutes += '/ ' + Math.round((busTime - now) / 60000);
+							if(minutes == ''){
+								minutes += Math.round((busTime - now) / 60000);
+							}else{
+								minutes += '/ ' + Math.round((busTime - now) / 60000);
+							}
+							
 						}
 						minutes += " min";
 					} else {
