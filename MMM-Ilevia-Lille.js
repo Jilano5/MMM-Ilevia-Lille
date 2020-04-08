@@ -21,6 +21,7 @@ Module.register("MMM-Ilevia-Lille",{
 		defaultIcon: 'bus',
 		showNumber: true, // Bus number
 		showIcon: true, // Bus icon in front of row
+		useIleviaColor: true, //Use colors from ilevia database
 		useColor: true,
 		colorCode: {
 			Blue: "rgb(0,121,188)",
@@ -34,7 +35,8 @@ Module.register("MMM-Ilevia-Lille",{
 		stacked: true, // Show multiple buses on same row, if same route and destination
 		showTimeLimit: 45, // If not stacked, show time of departure instead of minutes, if more than this limit until departure.
 		debug: false, //console.log more things to help debugging
-		ileviaAPIURL: 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-prochainspassages'	
+		ileviaAPIURL: 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-prochainspassages',
+		ileviaAPIURLColor: 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-couleurslignes'
 	},
 	
 
@@ -47,6 +49,10 @@ Module.register("MMM-Ilevia-Lille",{
 
 		//Send data to Node JS
 		this.sendSocketNotification('SET_CONFIG', this.config);
+		
+		//Get color for buses lines from Ilevia
+		this.IleviaColor = []
+		this.sendSocketNotification('GET_COLOR', this.config.busStations);
 		
 		this.busRecords = {};
 		this.loaded = false;
@@ -110,6 +116,21 @@ Module.register("MMM-Ilevia-Lille",{
 			}
 			if (color != null) {
 				element.style="color:"+color+";";
+			}			
+		}
+	},
+	
+	setIleviaColor: function(element, codeligne) {
+		if (this.config.useColor) {
+			var colorHEX = null;
+			for (var index in this.IleviaColor) {
+				if(this.IleviaColor[index].codeligne === codeligne){
+					colorHEX = '#' + this.IleviaColor[index].colorHEX
+					break;
+				}
+			}
+			if (colorHEX != null) {
+				element.style="color:"+colorHEX+";";
 			}			
 		}
 	},
@@ -249,7 +270,12 @@ Module.register("MMM-Ilevia-Lille",{
 					//Color
 					if (self.config.useColor) {
 						self.setColor(busWrapper,stop.color);
-					} 
+					}
+
+					//Ilevia Color
+					if (self.config.useIleviaColor) {
+						self.setIleviaColor(busWrapper,bus.number);
+					}					
 					
 					// Icon
 					if (self.config.showIcon) {
@@ -312,6 +338,10 @@ Module.register("MMM-Ilevia-Lille",{
 			
 			case "DEBUG":
 				Log.info(payload);
+				break;
+				
+			case "ILEVIA_COLOR":
+				this.IleviaColor.push(payload)
 				break;
 		}
 	},

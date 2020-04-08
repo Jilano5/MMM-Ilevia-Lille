@@ -46,6 +46,7 @@ The `config:` values are :
 | showNumber | true | Display the number/name of the line |
 | showIcon | true | Display the icon of the line |
 | defaultIcon | bus | Default symbol that may be used in the font awesome library [here](https://fontawesome.com/icons?d=gallery&m=free) |
+| useIleviaColor | true | Uses color of Ilevia API for lines (override useColor param) |
 | useColor | true | Uses color set up in the lines configuration below |
 | colorCode | Array | List of color available in RGB (ex : Blue: "rgb(0,121,188)"). Blue, Green, Yellow, Purple, White and Orange are available |
 | size | medium | Text size, for example small, medium or large |

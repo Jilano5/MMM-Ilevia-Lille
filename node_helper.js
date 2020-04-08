@@ -27,6 +27,34 @@ module.exports = NodeHelper.create({
 			this.started = true;
 			self.scheduleUpdate(this.config.initialLoadDelay);
 		}
+		
+		if (notification === 'GET_COLOR') {
+			var busStations = payload
+			if (this.config.debug) {
+				self.sendSocketNotification("DEBUG", this.name + ' Debug : get color in node_helper: ');
+				self.sendSocketNotification("DEBUG", payload);
+			}
+
+			for (var index in busStations) {
+
+				stopConfig = busStations[index];
+				codeligne = stopConfig.codeligne
+				
+				var urlIleviaColor = self.config.ileviaAPIURLColor
+				
+				if(typeof(this.config.apiKey) !== 'undefined'){
+					urlIleviaColor += '&apikey=' + encodeURI(this.config.apiKey)
+				}
+				if(typeof(codeligne) !== 'undefined'){
+					urlIleviaColor += '&refine.code_identifiant_public=' + encodeURI(codeligne.toUpperCase())
+				}
+
+				self.getIleviaColor(
+					urlIleviaColor
+				);
+				
+			}
+		}
 	},
 
 	/* scheduleUpdate()
@@ -90,6 +118,48 @@ module.exports = NodeHelper.create({
 				
 				if (retry) {
 					self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+				}
+			})
+	},
+		
+	getIleviaColor: function (_url) {
+		var self = this;
+		var retry = true;
+		
+		if (this.config.debug) {
+			self.sendSocketNotification("DEBUG", this.name + ' Debug : fetching: ' + _url); 
+		 }
+		unirest.get(_url)
+			.header({
+				'Accept': 'application/json;charset=utf-8'
+			})
+			.end(function (response) {
+				if (response && response.body) {
+
+					var data = response.body;
+
+					if (self.config.debug) {
+						self.sendSocketNotification("DEBUG", this.name + ' Debug : received answer for: ' + _url);
+						self.sendSocketNotification("DEBUG", this.name + ' Debug : IleviaColor request response');
+						self.sendSocketNotification("DEBUG", data);
+					}
+
+					var colorData = { 
+						codeligne: data.records[0].fields.code_identifiant_public,
+						colorHEX: data.records[0].fields.rgbhex_fond
+					}
+
+					self.sendSocketNotification("ILEVIA_COLOR", colorData);
+							
+				} else {
+					if (self.config.debug) {
+						if (response) {
+							self.sendSocketNotification("DEBUG", this.name + ' Debug : partial response received');
+							self.sendSocketNotification("DEBUG", response);
+						} else {
+							self.sendSocketNotification("DEBUG", this.name + ' Debug : no response received');
+						}
+					}
 				}
 			})
 	},
