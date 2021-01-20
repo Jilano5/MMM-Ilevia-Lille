@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
 					urlIleviaColor += '&apikey=' + encodeURI(this.config.apiKey)
 				}
 				if(typeof(codeligne) !== 'undefined'){
-					urlIleviaColor += '&refine.code_identifiant_public=' + encodeURI(codeligne.toUpperCase())
+					urlIleviaColor += '&refine.code_identifiant_public=' + encodeURI(codeligne.toUpperCase().split(' ').join('+'))
 				}
 
 				self.getIleviaColor(
@@ -185,13 +185,13 @@ module.exports = NodeHelper.create({
 				urlIlevia += '&timezone=' + encodeURI(self.config.timezone)
 			}
 			if(typeof(stopConfig.nomstation) !== 'undefined'){
-				urlIlevia += '&refine.nomstation=' + encodeURI(stopConfig.nomstation.toUpperCase())
+				urlIlevia += '&refine.nomstation=' + encodeURI(stopConfig.nomstation.toUpperCase().split(' ').join('+'))
 			}
 			if(typeof(stopConfig.codeligne) !== 'undefined'){
-				urlIlevia += '&refine.codeligne=' + encodeURI(stopConfig.codeligne.toUpperCase())
+				urlIlevia += '&refine.codeligne=' + encodeURI(stopConfig.codeligne.toUpperCase().split(' ').join('+'))
 			}
 			if(typeof(stopConfig.sensligne) !== 'undefined'){
-				urlIlevia += '&refine.sensligne=' + encodeURI(stopConfig.sensligne.toUpperCase())
+				urlIlevia += '&refine.sensligne=' + encodeURI(stopConfig.sensligne.toUpperCase().split(' ').join('+'))
 			}
 			
 			self.getResponse(
