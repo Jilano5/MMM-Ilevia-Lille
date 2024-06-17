@@ -14,8 +14,8 @@ Module.register("MMM-Ilevia-Lille",{
 	defaults: {
 		updateInterval: 2 * 60 * 1000, //time in ms between pulling request for new times (update request)
 		initialLoadDelay: 0, // start delay seconds.
-		maxLettersForDestination: 12, //will limit the length of the destination string
-		maxLettersForStop: 12, //will limit the length of the destination string
+		maxLettersForDestination: 20, //will limit the length of the destination string
+		maxLettersForStop: 20, //will limit the length of the destination string
 		showSecondsToNextUpdate: false,  // display a countdown to the next update pull (should I wait for a refresh before going ?)
 		showLastUpdateTime: false,  //display the time when the last pulled occured (taste & color...)
 		defaultIcon: 'bus',
@@ -35,8 +35,8 @@ Module.register("MMM-Ilevia-Lille",{
 		stacked: true, // Show multiple buses on same row, if same route and destination
 		showTimeLimit: 45, // If not stacked, show time of departure instead of minutes, if more than this limit until departure.
 		debug: false, //console.log more things to help debugging
-		ileviaAPIURL: 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-prochainspassages',
-		ileviaAPIURLColor: 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-couleurslignes'
+		ileviaAPIURL: 'https://data.lillemetropole.fr/data/ogcapi/collections/prochains_passages/items?f=json',
+		ileviaAPIURLColor: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia_couleurslignes/items?f=json'
 	},
 	
 
@@ -62,7 +62,7 @@ Module.register("MMM-Ilevia-Lille",{
 		setInterval(function () {
 			self.caller = 'updateInterval';
 			self.updateDom();
-		}, 1000);
+		}, this.config.updateInterval);
 	},
 	
 	getTranslations: function () {
@@ -142,28 +142,28 @@ Module.register("MMM-Ilevia-Lille",{
         var previousStackvalue = '';
         var stackedTimes = [];
         if (len > 0) {
-            previousStackvalue = '' + buses[0].fields.nomstation + buses[0].fields.codeligne + buses[0].fields.sensligne;
-            stackedTimes.push(buses[0].fields.heureestimeedepart);
+            previousStackvalue = '' + buses[0].nom_station + buses[0].code_ligne + buses[0].sens_ligne;
+            stackedTimes.push(buses[0].heure_estimee_depart);
             for (var i = 1; i < len; i++) {
-                stackvalue = '' + buses[i].fields.nomstation + buses[i].fields.codeligne + buses[i].fields.sensligne;
+                stackvalue = '' + buses[i].nom_station + buses[i].code_ligne + buses[i].sens_ligne;
                 if (stackvalue == previousStackvalue) {
-                    stackedTimes.push(buses[i].fields.heureestimeedepart);
+                    stackedTimes.push(buses[i].heure_estimee_depart);
                 } else {
                     stackedBuses.push({
-                        from: buses[i - 1].fields.nomstation,
-                        number: buses[i - 1].fields.codeligne,
-                        to: buses[i - 1].fields.sensligne,
+                        from: buses[i - 1].nom_station,
+                        number: buses[i - 1].code_ligne,
+                        to: buses[i - 1].sens_ligne,
                         times: stackedTimes
                     });
                     previousStackvalue = stackvalue;
                     stackedTimes = [];
-                    stackedTimes.push(buses[i].fields.heureestimeedepart)
+                    stackedTimes.push(buses[i].heure_estimee_depart)
                 }
             }
             stackedBuses.push({
-                from: buses[len - 1].fields.nomstation,
-                number: buses[len - 1].fields.codeligne,
-                to: buses[len - 1].fields.sensligne,
+                from: buses[len - 1].nom_station,
+                number: buses[len - 1].code_ligne,
+                to: buses[len - 1].sens_ligne,
                 times: stackedTimes
             });
         }
@@ -177,10 +177,10 @@ Module.register("MMM-Ilevia-Lille",{
         if (len > 0) {
             for (var i = 0; i < len; i++) {
 				formatedBuses.push({
-					from: buses[i].fields.nomstation,
-					number: buses[i].fields.codeligne,
-					to: buses[i].fields.sensligne,
-					time: buses[i].fields.heureestimeedepart
+					from: buses[i].nom_station,
+					number: buses[i].code_ligne,
+					to: buses[i].sens_ligne,
+					time: buses[i].heure_estimee_depart
 				});
 			}
         }
@@ -222,18 +222,16 @@ Module.register("MMM-Ilevia-Lille",{
 			if(self.config.debug){
 				Log.info('MMM-Ilevia-Lille Debug : comingBuses')
 				Log.info(comingBuses)
-				Log.info(self.config.debug)
 			}
 			
 			if(typeof(comingBuses) !== 'undefined'){
 				comingBuses.forEach(function (bus) {
-				
 					//#region Get the next passage time
 					var now = new Date();
 					var minutes = '';
 					if(self.config.stacked) {
 						if(bus.times.length > 0) {
-							var busTime = new Date(bus.times[0]);
+							var busTime = new Date(bus.times[0].replace('+00:00', '+02:00'));
 							minutes = Math.round((busTime - now) / 60000);
 							if(minutes <= 1 && minutes > 0){
 								minutes = self.translate("CLOSE");
@@ -243,7 +241,7 @@ Module.register("MMM-Ilevia-Lille",{
 							}
 						}
 						for(var i=1; i < bus.times.length; i++){
-							var busTime = new Date(bus.times[i]);
+							var busTime = new Date(bus.times[i].replace('+00:00', '+02:00'));
 							if(minutes == ''){
 								minutes += Math.round((busTime - now) / 60000);
 							}else{
@@ -253,7 +251,7 @@ Module.register("MMM-Ilevia-Lille",{
 						}
 						minutes += " min";
 					} else {
-						var busTime = new Date(bus.time);
+						var busTime = new Date(bus.time.replace('+00:00', '+02:00'));
 						minutes = Math.round((busTime - now) / 60000);
 						if(minutes > self.config.showTimeLimit){
 							minutes = busTime.getHours() + ':' + (busTime.getMinutes() < 10 ? '0' : '') + busTime.getMinutes();
@@ -300,9 +298,9 @@ Module.register("MMM-Ilevia-Lille",{
 					// Trip
 					var tripWrapper = document.createElement("td");
 					tripWrapper.className = "align-left";
-					tripWrapper.innerHTML = self.capitalizeFirstLetter(bus.from.substr(0, this.config.maxLettersForStop).toLowerCase());
+					tripWrapper.innerHTML = self.capitalizeFirstLetter(bus.from.substr(0, self.config.maxLettersForStop).toLowerCase());
 					if (comingBuses.length>0) {
-						tripWrapper.innerHTML += " &rarr; " + self.capitalizeFirstLetter(bus.to.substr(0, this.config.maxLettersForDestination).toLowerCase());
+						tripWrapper.innerHTML += " &rarr; " + self.capitalizeFirstLetter(bus.to.substr(0, self.config.maxLettersForDestination).toLowerCase());
 					}
 					busWrapper.appendChild(tripWrapper);
 		

@@ -4,7 +4,7 @@ It is based on the module developped by normyx : [MMM-Nantes-TAN](https://github
 ## Screenshot
 ![screenshot](https://github.com/Jilano5/MMM-Ilevia-Lille/blob/master/MMM-Ilevia-Lille.png)
 ## API
-This module uses the opendata API provided by the MEL organization and Ilevia. Documentation may by found [here](https://opendata.lillemetropole.fr/explore/dataset/ilevia-prochainspassages/information/).
+This module uses the opendata API provided by the MEL organization and Ilevia. Documentation may by found [here](https://data.lillemetropole.fr/data/ogcapi/collections/prochains_passages/item).
 
 ### API Key
 
@@ -53,7 +53,7 @@ The `config:` values are :
 | stacked | true | Show multiple buses on same row, if same route and destination |
 | showTimeLimit | 45 | If not stacked, show time of departure instead of minutes, if more than this limit until departure. |
 | debug | false | `console.log` more things to help debugging |
-| ileviaAPIURL | 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-prochainspassages' | URI for the MEL Opendata API. No modification need, just in case evolutions |
+| ileviaAPIURL | 'https://data.lillemetropole.fr/data/ogcapi/collections/prochains_passages/item' | URI for the MEL Opendata API. No modification need, just in case evolutions |
 | busStations | Array | See below |
 
 
@@ -63,11 +63,11 @@ The bus stations (`busStations:`) configuration are :
 | -------- | -------- | -------- |
 | nomstation | true | The stop shortname from where you want to leave. The name is found in the following request : [https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=ilevia-physicalstop&rows=5000&facet=cityname&facet=transportmoderef&facet=publiclinecode). For instance, `'BD DE MONS'` for BOULEVARD DE MONS stop. |
 | codeligne | false | The line in the given stop you want to use.|
-| sensligne | false | The destination of the line. For instance, `'EUROTELPORT'` for tram.|
+| sensligne | false | The destination of the line. For instance, `'EUROTELEPORT'` for tram.|
 | color | false | the color to use for this line. May be 'blue', 'green', 'purple', 'orange', 'white' or 'yellow'. If not set, default MagicMirror color will be used. |
 | icon | false | Icon that may be used in the font awesome library [here](https://fontawesome.com/icons?d=gallery&m=free). If not set, the config `defaultIcon` will be used. Useally, the 'bus', 'subway' or 'train' may be used. |
 
-You can test your nomstation, codeligne and sensligne parameters in the API helper of MEL API site [here](https://opendata.lillemetropole.fr/explore/dataset/ilevia-prochainspassages/api/?refine.nomstation=COLUCHE)
+You can test your nomstation, codeligne and sensligne parameters in the API helper of MEL API site [here](https://data.lillemetropole.fr/data/ogcapi/collections/prochains_passages/items?filter="nom_station"='GARE LILLE FLANDRES')
 
 Here is an example:
 ```javascript=
@@ -78,10 +78,12 @@ Here is an example:
             config: {
                 apiKey: '375...3d1',
                 busStations: [
-                    {nomstation:'LILLE FLANDRES', codeligne:'TRAM', sensligne:"EUROTELEPORT" , color:'blue', icon:'train'},
+                    {nomstation:'GARE LILLE FLANDRES', codeligne:'TRAM', sensligne:"EUROTELEPORT" , color:'blue', icon:'train'},
                     {nomstation:'WAGNER', codeligne:'CO1', sensligne:"HOTEL DE VILLE" , color:'green'}
                 ],
             }
         },
 
 ```
+
+

@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
 					urlIleviaColor += '&apikey=' + encodeURI(this.config.apiKey)
 				}
 				if(typeof(codeligne) !== 'undefined'){
-					urlIleviaColor += '&refine.code_identifiant_public=' + encodeURI(codeligne.toUpperCase().split(' ').join('+'))
+					urlIleviaColor += encodeURI("&filter=\"code_ligne\"='" + codeligne.toUpperCase() + "'")
 				}
 
 				self.getIleviaColor(
@@ -94,7 +94,7 @@ module.exports = NodeHelper.create({
 		
 		if (this.config.debug) {
 			self.sendSocketNotification("DEBUG", this.name + ' Debug : fetching: ' + _url); 
-		 }
+		}
 		unirest.get(_url)
 			.header({
 				'Accept': 'application/json;charset=utf-8'
@@ -128,7 +128,7 @@ module.exports = NodeHelper.create({
 		
 		if (this.config.debug) {
 			self.sendSocketNotification("DEBUG", this.name + ' Debug : fetching: ' + _url); 
-		 }
+		}
 		unirest.get(_url)
 			.header({
 				'Accept': 'application/json;charset=utf-8'
@@ -145,8 +145,8 @@ module.exports = NodeHelper.create({
 					}
 
 					var colorData = { 
-						codeligne: data.records[0].fields.code_identifiant_public,
-						colorHEX: data.records[0].fields.rgbhex_fond
+						codeligne: data.records[0].properties.code_identifiant_public,
+						colorHEX: data.records[0].properties.rgbhex_fond
 					}
 
 					self.sendSocketNotification("ILEVIA_COLOR", colorData);
@@ -184,14 +184,21 @@ module.exports = NodeHelper.create({
 			if(typeof(self.config.timezone) !== 'undefined'){
 				urlIlevia += '&timezone=' + encodeURI(self.config.timezone)
 			}
+
+			filterElements = []
+
 			if(typeof(stopConfig.nomstation) !== 'undefined'){
-				urlIlevia += '&refine.nomstation=' + encodeURI(stopConfig.nomstation.toUpperCase().split(' ').join('+'))
+				filterElements.push('"nom_station"=\'' + stopConfig.nomstation.toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.codeligne) !== 'undefined'){
-				urlIlevia += '&refine.codeligne=' + encodeURI(stopConfig.codeligne.toUpperCase().split(' ').join('+'))
+				filterElements.push('"code_ligne"=\'' + stopConfig.codeligne.toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.sensligne) !== 'undefined'){
-				urlIlevia += '&refine.sensligne=' + encodeURI(stopConfig.sensligne.toUpperCase().split(' ').join('+'))
+				filterElements.push('"sens_ligne"=\'' + stopConfig.sensligne.toUpperCase() + "'") 
+			}
+
+			if(filterElements.length != 0){
+				urlIlevia += encodeURI("&filter=" + filterElements.join(" AND "))
 			}
 			
 			self.getResponse(
