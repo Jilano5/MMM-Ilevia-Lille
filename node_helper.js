@@ -188,13 +188,13 @@ module.exports = NodeHelper.create({
 			filterElements = []
 
 			if(typeof(stopConfig.nomstation) !== 'undefined'){
-				filterElements.push('"nom_station"=\'' + stopConfig.nomstation.toUpperCase() + "'") 
+				filterElements.push('"nom_station"=\'' + stopConfig.nomstation.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.codeligne) !== 'undefined'){
-				filterElements.push('"code_ligne"=\'' + stopConfig.codeligne.toUpperCase() + "'") 
+				filterElements.push('"code_ligne"=\'' + stopConfig.codeligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.sensligne) !== 'undefined'){
-				filterElements.push('"sens_ligne"=\'' + stopConfig.sensligne.toUpperCase() + "'") 
+				filterElements.push('"sens_ligne"=\'' + stopConfig.sensligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 
 			if(filterElements.length != 0){
