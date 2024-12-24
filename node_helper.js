@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
 					urlIleviaColor += '&apikey=' + encodeURI(this.config.apiKey)
 				}
 				if(typeof(codeligne) !== 'undefined'){
-					urlIleviaColor += encodeURI("&filter=\"code_ligne\"='" + codeligne.toUpperCase() + "'")
+					urlIleviaColor += encodeURI("&filter=\"code_ligne\"%3D'" + codeligne.toUpperCase() + "'")
 				}
 
 				self.getIleviaColor(
@@ -188,17 +188,17 @@ module.exports = NodeHelper.create({
 			filterElements = []
 
 			if(typeof(stopConfig.nomstation) !== 'undefined'){
-				filterElements.push('"nom_station"=\'' + stopConfig.nomstation.replace(/'/g, "\'\'").toUpperCase() + "'") 
+				filterElements.push('"nom_station"%3D\'' + stopConfig.nomstation.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.codeligne) !== 'undefined'){
-				filterElements.push('"code_ligne"=\'' + stopConfig.codeligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
+				filterElements.push('"code_ligne"%3D\'' + stopConfig.codeligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 			if(typeof(stopConfig.sensligne) !== 'undefined'){
-				filterElements.push('"sens_ligne"=\'' + stopConfig.sensligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
+				filterElements.push('"sens_ligne"%3D\'' + stopConfig.sensligne.replace(/'/g, "\'\'").toUpperCase() + "'") 
 			}
 
 			if(filterElements.length != 0){
-				urlIlevia += encodeURI("&filter=" + filterElements.join(" AND "))
+				urlIlevia += "&filter=" + filterElements.join(" AND ") + "&filter-lang=ecql-text"
 			}
 			
 			self.getResponse(
