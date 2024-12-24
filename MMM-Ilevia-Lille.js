@@ -35,8 +35,8 @@ Module.register("MMM-Ilevia-Lille",{
 		stacked: true, // Show multiple buses on same row, if same route and destination
 		showTimeLimit: 45, // If not stacked, show time of departure instead of minutes, if more than this limit until departure.
 		debug: false, //console.log more things to help debugging
-		ileviaAPIURL: 'https://data.lillemetropole.fr/data/ogcapi/collections/prochains_passages/items?f=json',
-		ileviaAPIURLColor: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia_couleurslignes/items?f=json'
+		ileviaAPIURL: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia%3Aprochains_passages/items?f=json',
+		ileviaAPIURLColor: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia%3Acouleurslignes/items?f=json'
 	},
 	
 
@@ -231,7 +231,7 @@ Module.register("MMM-Ilevia-Lille",{
 					var minutes = '';
 					if(self.config.stacked) {
 						if(bus.times.length > 0) {
-							var busTime = new Date(bus.times[0].replace('+00:00', '+02:00'));
+							var busTime = new Date(bus.times[0].replace('+00:00', ''));
 							minutes = Math.round((busTime - now) / 60000);
 							if(minutes <= 1 && minutes > 0){
 								minutes = self.translate("CLOSE");
@@ -241,7 +241,7 @@ Module.register("MMM-Ilevia-Lille",{
 							}
 						}
 						for(var i=1; i < bus.times.length; i++){
-							var busTime = new Date(bus.times[i].replace('+00:00', '+02:00'));
+							var busTime = new Date(bus.times[i].replace('+00:00', ''));
 							if(minutes == ''){
 								minutes += Math.round((busTime - now) / 60000);
 							}else{
@@ -251,7 +251,7 @@ Module.register("MMM-Ilevia-Lille",{
 						}
 						minutes += " min";
 					} else {
-						var busTime = new Date(bus.time.replace('+00:00', '+02:00'));
+						var busTime = new Date(bus.time.replace('+00:00', ''));
 						minutes = Math.round((busTime - now) / 60000);
 						if(minutes > self.config.showTimeLimit){
 							minutes = busTime.getHours() + ':' + (busTime.getMinutes() < 10 ? '0' : '') + busTime.getMinutes();
