@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
 					urlIleviaColor += '&apikey=' + encodeURI(this.config.apiKey)
 				}
 				if(typeof(codeligne) !== 'undefined'){
-					urlIleviaColor += encodeURI("&filter=\"code_ligne\"%3D'" + codeligne.toUpperCase() + "'")
+					urlIleviaColor += "&filter=\"code_ligne\"%3D'" + codeligne.toUpperCase() + "'&filter-lang=ecql-text"
 				}
 
 				self.getIleviaColor(
@@ -144,12 +144,15 @@ module.exports = NodeHelper.create({
 						self.sendSocketNotification("DEBUG", data);
 					}
 
+					if (data.features && data.features.length > 0) {
+
 					var colorData = { 
-						codeligne: data.records[0].properties.code_identifiant_public,
-						colorHEX: data.records[0].properties.rgbhex_fond
+						codeligne: data.features[0].properties.code_ligne,
+						colorHEX: data.features[0].properties.couleur_fond_hexadecimal
 					}
 
 					self.sendSocketNotification("ILEVIA_COLOR", colorData);
+				}
 							
 				} else {
 					if (self.config.debug) {
@@ -231,14 +234,14 @@ module.exports = NodeHelper.create({
 		}
 		
 		//Check si des résultats sont présent (mauvaise requète) pour l'affichage d'un message
-		if(data.nbhits == 0)
+		if(data.numberMatched == 0)
 		{
 			stopData.noresult = true
 		}else{
 			stopData.noresult = false
 		}
 
-		stopData.records = data.records;
+		stopData.records = data.features ? data.features.map(function(f){ return f.properties; }) : [];
 		
 		this.loaded = true;
 		this.sendSocketNotification("BUS", stopData);

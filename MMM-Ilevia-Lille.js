@@ -35,8 +35,8 @@ Module.register("MMM-Ilevia-Lille",{
 		stacked: true, // Show multiple buses on same row, if same route and destination
 		showTimeLimit: 45, // If not stacked, show time of departure instead of minutes, if more than this limit until departure.
 		debug: false, //console.log more things to help debugging
-		ileviaAPIURL: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia%3Aprochains_passages/items?f=json',
-		ileviaAPIURLColor: 'https://data.lillemetropole.fr/data/ogcapi/collections/ilevia%3Acouleurslignes/items?f=json'
+		ileviaAPIURL: 'https://data.lillemetropole.fr/geoserver/ogc/features/v1/collections/dsp_ilevia%3Aprochains_passages/items?f=json',
+		ileviaAPIURLColor: 'https://data.lillemetropole.fr/geoserver/ogc/features/v1/collections/dsp_ilevia%3Acouleurs_lignes/items?f=json'
 	},
 	
 
