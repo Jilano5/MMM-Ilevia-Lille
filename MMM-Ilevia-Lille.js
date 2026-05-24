@@ -91,52 +91,25 @@ Module.register("MMM-Ilevia-Lille",{
 	
 	setColor: function(element, codeColor) {
 		if (this.config.useColor && codeColor != null) {
-			var color = null;
-			switch(codeColor) {
-				case 'blue':
-				color = this.config.colorCode.Blue;
-				break;
-				case 'green':
-				color = this.config.colorCode.Green;
-				break;
-				case 'yellow':
-				color = this.config.colorCode.Yellow;
-				break;
-				case 'purple':
-				color = this.config.colorCode.Purple;
-				break;
-				case 'white':
-				color = this.config.colorCode.White;
-				break;
-				case 'orange':
-				color = this.config.colorCode.Orange;
-				break;
-				default :
-				
+			var colorMap = { blue: 'Blue', green: 'Green', yellow: 'Yellow', purple: 'Purple', white: 'White', orange: 'Orange' };
+			var key = colorMap[codeColor];
+			if (key) {
+				element.style = "color:" + this.config.colorCode[key] + ";";
 			}
-			if (color != null) {
-				element.style="color:"+color+";";
-			}			
 		}
 	},
 	
 	setIleviaColor: function(element, codeligne) {
 		if (this.config.useColor) {
-			var colorHEX = null;
-			for (var index in this.IleviaColor) {
-				if(this.IleviaColor[index].codeligne === codeligne){
-					colorHEX = '#' + this.IleviaColor[index].colorHEX
-					break;
-				}
+			var found = this.IleviaColor.find(function(c) { return c.codeligne === codeligne; });
+			if (found) {
+				element.style = "color:#" + found.colorHEX + ";";
 			}
-			if (colorHEX != null) {
-				element.style="color:"+colorHEX+";";
-			}			
 		}
 	},
 	
 	stackBuses: function (buses) {
-        stackedBuses = [];
+        var stackedBuses = [];
 
         var len = buses.length;
         var previousStackvalue = '';
@@ -145,7 +118,7 @@ Module.register("MMM-Ilevia-Lille",{
             previousStackvalue = '' + buses[0].nom_station + buses[0].code_ligne + buses[0].sens_ligne;
             stackedTimes.push(buses[0].heure_estimee_depart);
             for (var i = 1; i < len; i++) {
-                stackvalue = '' + buses[i].nom_station + buses[i].code_ligne + buses[i].sens_ligne;
+                var stackvalue = '' + buses[i].nom_station + buses[i].code_ligne + buses[i].sens_ligne;
                 if (stackvalue == previousStackvalue) {
                     stackedTimes.push(buses[i].heure_estimee_depart);
                 } else {
@@ -171,25 +144,19 @@ Module.register("MMM-Ilevia-Lille",{
 	},
 	
 	formatBuses: function (buses) {
-        formatedBuses = [];
-
-        var len = buses.length;
-        if (len > 0) {
-            for (var i = 0; i < len; i++) {
-				formatedBuses.push({
-					from: buses[i].nom_station,
-					number: buses[i].code_ligne,
-					to: buses[i].sens_ligne,
-					time: buses[i].heure_estimee_depart
-				});
-			}
-        }
-        return formatedBuses;
+        return buses.map(function(b) {
+            return {
+                from: b.nom_station,
+                number: b.code_ligne,
+                to: b.sens_ligne,
+                time: b.heure_estimee_depart
+            };
+        });
     },
 	
 	// Override dom generator.
 	getDom: function() {
-		self = this;
+		var self = this;
         var wrapper = document.createElement("table");
         wrapper.className = "small";
         var first = true;
@@ -281,7 +248,7 @@ Module.register("MMM-Ilevia-Lille",{
 						if (stop.icon != null) {
 							iconWrapper.innerHTML = '<i class="fa fa-' + stop.icon + '" aria-hidden="true"></i>';
 						} else {
-							iconWrapper.innerHTML = '<i class="fa fa-' + self.config.defaultIcon + '" aria-hidden="true"></i>'; "fa fa-fw fa-"+self.config.defaultIcon;
+							iconWrapper.innerHTML = '<i class="fa fa-' + self.config.defaultIcon + '" aria-hidden="true"></i>';
 						}
 						iconWrapper.className = "align-right";
 						busWrapper.appendChild(iconWrapper);
@@ -323,12 +290,12 @@ Module.register("MMM-Ilevia-Lille",{
 			case "BUS":
 				if (payload.id != null) {
 					this.busRecords[payload.id] = this.config.stacked ? this.stackBuses(payload.records) : this.formatBuses(payload.records);
-					this.loaded = true;			
+					this.loaded = true;
 					this.updateDom();
-					break;
 				} else {
 					Log.info(this.name + ': BUS - No payload');
-				}	
+				}
+				break;
 			case "UPDATE":
 				this.config.lastUpdate = payload.lastUpdate;
 				this.updateDom();
@@ -345,13 +312,6 @@ Module.register("MMM-Ilevia-Lille",{
 	},
 	
 	capitalizeFirstLetter: function (str) {
-		var splitStr = str.toLowerCase().split(' ');
-		for (var i = 0; i < splitStr.length; i++) {
-			// You do not need to check if i is larger than splitStr length, as your for does that for you
-			// Assign it back to the array
-			splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
-		}
-		// Directly return the joined string
-		return splitStr.join(' '); 
+		return str.toLowerCase().replace(/\b\w/g, function(c) { return c.toUpperCase(); });
 	}
 });
