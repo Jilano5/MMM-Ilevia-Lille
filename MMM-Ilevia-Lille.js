@@ -198,7 +198,7 @@ Module.register("MMM-Ilevia-Lille",{
 					var minutes = '';
 					if(self.config.stacked) {
 						if(bus.times.length > 0) {
-							var busTime = new Date(bus.times[0].replace('+00:00', ''));
+							var busTime = self.parseIleviaTime(bus.times[0]);
 							minutes = Math.round((busTime - now) / 60000);
 							if(minutes <= 1 && minutes > 0){
 								minutes = self.translate("CLOSE");
@@ -208,7 +208,7 @@ Module.register("MMM-Ilevia-Lille",{
 							}
 						}
 						for(var i=1; i < bus.times.length; i++){
-							var busTime = new Date(bus.times[i].replace('+00:00', ''));
+							var busTime = self.parseIleviaTime(bus.times[i]);
 							if(minutes == ''){
 								minutes += Math.round((busTime - now) / 60000);
 							}else{
@@ -216,9 +216,11 @@ Module.register("MMM-Ilevia-Lille",{
 							}
 							
 						}
-						minutes += " min";
+						if(minutes !== self.translate("CLOSE")) {
+							minutes += " min";
+						}
 					} else {
-						var busTime = new Date(bus.time.replace('+00:00', ''));
+						var busTime = self.parseIleviaTime(bus.time);
 						minutes = Math.round((busTime - now) / 60000);
 						if(minutes > self.config.showTimeLimit){
 							minutes = busTime.getHours() + ':' + (busTime.getMinutes() < 10 ? '0' : '') + busTime.getMinutes();
@@ -313,5 +315,15 @@ Module.register("MMM-Ilevia-Lille",{
 	
 	capitalizeFirstLetter: function (str) {
 		return str.toLowerCase().replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+	},
+
+	// The API incorrectly tags Paris local time as UTC (Z).
+	// This strips the Z and corrects by subtracting the Europe/Paris UTC offset.
+	parseIleviaTime: function(str) {
+		var s = str.replace(/Z$/, '').replace(/\+00:00$/, '');
+		var ref = new Date();
+		var parisOffsetMs = new Date(ref.toLocaleString('en-US', {timeZone: 'Europe/Paris'})).getTime()
+						 - new Date(ref.toLocaleString('en-US', {timeZone: 'UTC'})).getTime();
+		return new Date(new Date(s + 'Z').getTime() - parisOffsetMs);
 	}
 });
